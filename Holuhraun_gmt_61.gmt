@@ -1,0 +1,97 @@
+#!/usr/bin/env bash
+# Logan's GMT Basemapper
+# GMT 6.1.0
+
+########################################################################################
+# area and projection
+#area=-17.400001/-16.359454/64.779226/65.021001 
+area=-16.901/-16.4/64.7842947674/64.9494596558 
+subarea=-25.0075/-12.7404/63.093/66.8583
+
+#gmt set MAP_FRAME_TYPE plain
+
+# output variables
+FIGDIR="./"
+OUTFILE=SBAS_path09_cross_points
+FORMAT="pdf"
+DEM=/InSAR/Bardarbunga/time_series_analysis/path09/topo/dem.grd
+IMAGE1=/InSAR/Bardarbunga/time_series_analysis/path09/SBAS/vel_ll.grd
+IMAGE2=/InSAR/Bardarbunga/lava_cooling/dT.grd
+#########################################################################################
+
+gmt begin $OUTFILE $FORMAT
+	gmt grd2cpt $IMAGE1 -Chaxby -H -E -Z -L-100/20 > SBAS.cpt
+	gmt grd2cpt $IMAGE2 -Chaxby -H -E -Z -L-360/60 > height.cpt
+	gmt grdimage $DEM -R$area -JM24c -Cgray -I+d -E -t20 --FORMAT_GEO_MAP=ddd.x
+	#gmt grdimage $IMAGE1 -R$area -CSBAS.cpt -Q -JM24c --FORMAT_GEO_MAP=ddd.x
+	gmt grdimage $IMAGE2 -R$area -Cheight.cpt -Q -JM24c --FORMAT_GEO_MAP=ddd.x
+	gmt coast -R$area -JM24c -Slightblue -Df -BWeSn -Ba.1f.05p -Lx20.5/2.3+w5k+c65+f+l -Wthinnest --FORMAT_GEO_MAP=ddd.x
+	#gmt colorbar -Bp20+l"LOS cm displacement" -DjBC+w8/.6 -CSBAS.cpt -F+gbeige -R$area -JM24c --FORMAT_GEO_MAP=ddd.x --FONT_LABEL=12p,Helvetica,black
+	gmt psxy -R$area -JM24c -W2 -SV+e+gblack <<- EOL
+	-16.81 64.83 .65 -159.9 4
+	-16.84 64.82 0.01 -249.9 1
+	EOL
+	gmt colorbar -Bp60+l"Annual Heat Loss(K@./yr) from SBAS" -DjBC+w8/.6 -Cheight.cpt -F+gbeige -R$area -JM24c --FORMAT_GEO_MAP=ddd.x --FONT_LABEL=12p,Helvetica,black
+	gmt plot -R$area -JM24c -Sd.375 -Cdodgerblue4,purple,red,magenta,darkblue,green,yellow -W1.4p,black <<-EOL
+	#-16.7331955731	64.8851835728	2
+	#-16.6933241189	64.8700596094	1
+	#-16.679473877	64.8623477221	0
+	#-16.7734464705	64.8979182243	3
+	#-16.7877210081	64.9057420492	4
+	#-16.4813 64.86181 5
+	#-16.5788 64.87764 6
+	EOL
+#	gmt psxy x_section.txt -R$area -JM24c
+	gmt text -R$area -JM24C <<-EOL
+	-16.821 64.79 SAR Satellite Direction, Path09
+	EOL
+	gmt text -R$area -JM24C -F+f14p,Helvetica-Bold,black <<-EOL
+	-16.65 64.81 April 27th, 2015 - August 14th, 2020
+	EOL
+#	gmt inset begin -DjTL+w4c/4.35c+o0.4c/0.25c -F+gsteelblue1+p1p+c0.1c+s
+#		gmt pscoast -R$subarea -JM? -Df -Glightorange -B0 -EES+gbisque --MAP_FRAME_TYPE=plain
+#		
+#		gmt psxy -R$subarea -JM? -Gcoral -L.06 <<- END
+#		-159.4218 56.5069
+#		-155.3506 56.0985
+#		-155.9975 54.3429
+#		-159.895 54.7505
+#		END
+#		-17.400001/-16.359454/64.779226/65.021001
+		#gmt psxy -R$subarea -JM? -Gcoral -L.06 <<- END
+		#-159.4218 56.5069
+		#-155.3506 56.0985
+		#-155.9975 54.3429
+		#-159.895 54.7505
+		#END
+	
+		#gmt psxy -R$subarea -JM? -Gseagreen -L.06 <<- END
+		#-163.5376, 56.5285
+		#-159.4664, 56.1172
+		#-160.0129, 54.6344
+		#-163.9391, 55.0359
+		#END
+#	gmt inset end
+#	gmt psscale -DjBR  -Lg-159/54.25+c+w10k -R$area -JM24c --FORMAT_GEO_MAP=ddd.x
+
+
+gmt end show
+
+#EOF
+#	-16.8254 64.86653 1
+#	-16.7579 64.88069 1
+#	-16.6862 64.89653 1
+#	-16.6221 64.90958 1
+#	-16.5163 64.93153 1
+#	-16.7471 64.91597 1
+#	-16.7071 64.90403 1
+#	-16.6721 64.89319 1
+#	-16.6404 64.88347 1
+#	-16.6154 64.87597 1
+#	-16.5904 64.86625 1
+#	-16.5521 64.85736 1
+#	-16.8929 64.90375 1
+#	-16.9062 64.87542 1
+#	-16.5754 64.88208 1
+#	-16.5004 64.90458 1 
+#	-16.7009 64.88920 1
